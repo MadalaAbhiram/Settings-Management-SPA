@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import SettingsLayout from '../pages/Settings/SettingsLayout';
 import GeneralSettings from '../pages/Settings/GeneralSettings';
@@ -21,7 +21,7 @@ function AppRoutes() {
     : '/login';
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Navigate to={rootRedirect} replace />} />
         <Route path="/login" element={<Login />} />
@@ -45,7 +45,7 @@ function AppRoutes() {
           <Route index element={<Navigate to="general" replace />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
