@@ -49,54 +49,60 @@ const GeneralSettings = () => {
     setValues(currentGeneralSettings);
   }, [currentGeneralSettings, setValues]);
 
-  const applyUiPreferences = (formValues) => {
-    const nextLang = formValues.language || 'en';
-    const nextTheme = formValues.theme || 'light';
-
-    document.documentElement.lang = nextLang;
-    if (nextTheme === 'auto' && window?.matchMedia) {
-      const media = window.matchMedia('(prefers-color-scheme: dark)');
-      document.documentElement.dataset.theme = media.matches ? 'dark' : 'light';
-    } else {
-      document.documentElement.dataset.theme = nextTheme;
-    }
-
-    try {
-      localStorage.setItem('appLanguage', nextLang);
-      localStorage.setItem('appTheme', nextTheme);
-    } catch {
-      // ignore storage errors
-    }
-
-    if (targetUserId) {
-      const nextSettings = {
-        ...currentGeneralSettings,
-        theme: nextTheme,
-        language: nextLang,
-      };
-      dispatch({
-        type: 'SET_GENERAL_SETTINGS',
-        payload: { userId: targetUserId, settings: nextSettings },
-      });
-    } else {
-      dispatch({
-        type: 'SET_APP_PREFERENCES',
-        payload: { theme: nextTheme, language: nextLang },
-      });
-    }
-  };
-
   const onSubmit = async (formValues) => {
     dispatch({ type: 'SET_LOADING', payload: true });
+
+    const nextGeneralSettings = {
+      ...currentGeneralSettings,
+      ...formValues,
+    };
+
     try {
       if (targetUserId) {
-        await saveSettings({ ...state, userSettings: { ...state.userSettings, [targetUserId]: { ...state.userSettings[targetUserId], general: formValues } } });
-        dispatch({ type: 'SET_GENERAL_SETTINGS', payload: { userId: targetUserId, settings: formValues } });
+        await saveSettings({
+          ...state,
+          userSettings: {
+            ...state.userSettings,
+            [targetUserId]: {
+              ...state.userSettings[targetUserId],
+              general: nextGeneralSettings,
+            },
+          },
+        });
+
+        dispatch({
+          type: 'SET_GENERAL_SETTINGS',
+          payload: { userId: targetUserId, settings: nextGeneralSettings },
+        });
+
+        if (targetUserId === state.currentUser?.id) {
+          dispatch({
+            type: 'SET_APP_PREFERENCES',
+            payload: {
+              theme: nextGeneralSettings.theme,
+              language: nextGeneralSettings.language,
+            },
+          });
+        }
       } else {
-        dispatch({ type: 'SET_APP_PREFERENCES', payload: { theme: formValues.theme, language: formValues.language } });
+        await saveSettings({
+          ...state,
+          uiPreferences: {
+            ...state.uiPreferences,
+            theme: nextGeneralSettings.theme,
+            language: nextGeneralSettings.language,
+          },
+        });
+
+        dispatch({
+          type: 'SET_APP_PREFERENCES',
+          payload: {
+            theme: nextGeneralSettings.theme,
+            language: nextGeneralSettings.language,
+          },
+        });
       }
 
-      applyUiPreferences(formValues);
       dispatch({ type: 'SET_SUCCESS', payload: true });
       setTimeout(() => dispatch({ type: 'RESET_STATE' }), 3000);
     } catch (error) {
@@ -161,7 +167,7 @@ const GeneralSettings = () => {
         <SaveButton
           loading={state.loading}
           text={t(previewLanguage, 'saveChanges')}
-          onClick={() => applyUiPreferences(values)}
+          type="submit"
         />
       </form>
     </div>

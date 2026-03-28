@@ -1,16 +1,41 @@
-# React + Vite
+# Settings Management SPA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + Vite single-page application for managing user settings and tracking expenses with separate admin and user flows.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Authentication with signup/login stored in local state
+- Admin dashboard for viewing users and managing their settings
+- User settings modules for general, notification, and privacy preferences
+- Expense tracker with add, list, delete, and transaction views
+- Persistent app state using `localStorage`
+- GitHub Pages deployment workflow
 
-## React Compiler
+## Project Structure
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+- `src/pages` contains route-level screens
+- `src/Components` contains reusable UI pieces
+- `src/context` contains global state and reducer logic
+- `src/services` contains persistence and mock async services
+- `src/hooks` contains reusable form behavior
+- `src/utils` contains translation and validation helpers
 
-## Expanding the ESLint configuration
+## Scripts
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `npm run dev` starts the Vite dev server
+- `npm run build` creates a production build
+- `npm run lint` runs ESLint
+- `npm run test` runs lightweight unit tests with Node's built-in test runner
+- `npm run preview` previews the production build locally
+
+## Architecture Notes
+
+- Routing is handled with nested `react-router-dom` routes.
+- Global state is managed with React Context + `useReducer`.
+- User settings are stored per user and applied through provider effects.
+- Async save behavior is simulated through `mockApi.js` for viva/demo purposes.
+
+## Deployment
+
+GitHub Pages deployment is configured in [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml).  
+Production builds use the repository base path from [`vite.config.js`](./vite.config.js).

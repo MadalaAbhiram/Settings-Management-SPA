@@ -4,7 +4,7 @@ import { SettingsContext } from '../../context/SettingsContext';
 import { getLanguage, t } from '../../utils/i18n';
 
 const SettingsLayout = ({ actionMode = 'back', showActionButton = true }) => {
-  const { state, dispatch } = useContext(SettingsContext);
+  const { state } = useContext(SettingsContext);
   const navigate = useNavigate();
   const language = getLanguage(state);
 
